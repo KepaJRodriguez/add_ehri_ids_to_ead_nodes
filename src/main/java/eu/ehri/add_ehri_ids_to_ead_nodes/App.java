@@ -55,27 +55,7 @@ public class App {
 				}
 
 			}
-			if (event.isStartElement()) {
-				if (event.asStartElement().getName().getLocalPart()
-						.equals("archdesc")) {
-					event = xmlEventReaderEAD.nextEvent();
-					writer.add(event);
-					if (event.isStartElement()) {
-						if (!event.asStartElement().getName().getLocalPart()
-								.equals("head")) {
-							writer.add(end);
-							writer.add(eventFactory.createStartElement("",
-									null, "unitid"));
-							writer.add(eventFactory.createAttribute("label",
-									"ehri_internal_id"));
-							writer.add(eventFactory.createCharacters("0"));
-							writer.add(eventFactory.createEndElement("", null,
-									"unitid"));
-							counter++;
-						}
-					}
-				}
-			}
+
 			if (event.isEndElement()) {
 				if (event.asEndElement().getName().getLocalPart()
 						.equals("head")
@@ -90,7 +70,7 @@ public class App {
 							.createEndElement("", null, "unitid"));
 					counter++;
 				}
-			}
+			} 
 			if (event.isStartElement()) {
 				if (event.asStartElement().getName().getLocalPart()
 						.equals("did")
@@ -106,7 +86,7 @@ public class App {
 							.createEndElement("", null, "unitid"));
 					counter++;
 				}
-			}
+			} 
 		}
 		
 		writer.close();

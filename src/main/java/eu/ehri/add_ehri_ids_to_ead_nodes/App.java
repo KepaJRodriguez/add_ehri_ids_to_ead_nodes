@@ -19,7 +19,6 @@ import javax.xml.stream.events.XMLEvent;
  * @author Kepa J. Rodriguez (https://github.com/KepaJRodriguez)
  */
 
-
 public class App {
 	public static void main(String[] args) throws XMLStreamException,
 			FactoryConfigurationError, IOException {
@@ -49,10 +48,9 @@ public class App {
 						.equals("archdesc")) {
 					top = true;
 				}
-			}
+			} 
 			if (event.isEndElement()) {
-				if (event.asEndElement().getName().getLocalPart()
-						.equals("did")) {
+				if (event.asEndElement().getName().getLocalPart().equals("did")) {
 					top = false;
 				}
 
@@ -61,6 +59,7 @@ public class App {
 				if (event.asStartElement().getName().getLocalPart()
 						.equals("archdesc")) {
 					event = xmlEventReaderEAD.nextEvent();
+					writer.add(event);
 					if (event.isStartElement()) {
 						if (!event.asStartElement().getName().getLocalPart()
 								.equals("head")) {
@@ -94,19 +93,24 @@ public class App {
 			}
 			if (event.isStartElement()) {
 				if (event.asStartElement().getName().getLocalPart()
-						.equals("did") && top == false) {
+						.equals("did")
+						&& top == false) {
 					writer.add(end);
 					writer.add(eventFactory.createStartElement("", null,
 							"unitid"));
 					writer.add(eventFactory.createAttribute("label",
 							"ehri_internal_id"));
-					writer.add(eventFactory.createCharacters(String.valueOf(counter)));
+					writer.add(eventFactory.createCharacters(String
+							.valueOf(counter)));
 					writer.add(eventFactory
 							.createEndElement("", null, "unitid"));
 					counter++;
 				}
 			}
 		}
-
+		
+		writer.close();
+		xmlEventReaderEAD.close();
+		
 	}
 }

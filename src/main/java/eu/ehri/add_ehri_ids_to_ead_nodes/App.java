@@ -22,7 +22,6 @@ import javax.xml.stream.events.XMLEvent;
 public class App {
 	public static void main(String[] args) throws XMLStreamException,
 			FactoryConfigurationError, IOException {
-		System.out.println("Hello World!");
 
 		String eadfile = args[0];
 		String outputfile = eadfile.replace(".xml", "_ehriID.xml");
@@ -39,6 +38,7 @@ public class App {
 		XMLEvent end = eventFactory.createDTD("\n");
 		int counter = 0;
 		boolean top = false;
+		boolean hashead = LookForHead.hasHeadTag(eadfile);
 
 		while (xmlEventReaderEAD.hasNext()) {
 			XMLEvent event = xmlEventReaderEAD.nextEvent();
@@ -48,7 +48,7 @@ public class App {
 						.equals("archdesc")) {
 					top = true;
 				}
-			} 
+			}
 			if (event.isEndElement()) {
 				if (event.asEndElement().getName().getLocalPart().equals("did")) {
 					top = false;
@@ -70,11 +70,29 @@ public class App {
 							.createEndElement("", null, "unitid"));
 					counter++;
 				}
-			} 
+			}
+
+			if (event.isStartElement()) {
+				if (event.asStartElement().getName().getLocalPart()
+						.equals("did")
+						&& top == true && hashead == false) {
+					writer.add(end);
+					writer.add(eventFactory.createStartElement("", null,
+							"unitid"));
+					writer.add(eventFactory.createAttribute("label",
+							"ehri_internal_id"));
+					writer.add(eventFactory.createCharacters("0"));
+					writer.add(eventFactory
+							.createEndElement("", null, "unitid"));
+					counter++;
+				}
+			}
+
 			if (event.isStartElement()) {
 				if (event.asStartElement().getName().getLocalPart()
 						.equals("did")
 						&& top == false) {
+					// && head == false) {
 					writer.add(end);
 					writer.add(eventFactory.createStartElement("", null,
 							"unitid"));
@@ -86,11 +104,11 @@ public class App {
 							.createEndElement("", null, "unitid"));
 					counter++;
 				}
-			} 
+			}
 		}
-		
+
 		writer.close();
 		xmlEventReaderEAD.close();
-		
+
 	}
 }
